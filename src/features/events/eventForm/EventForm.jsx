@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { Segment, Header, Form, Button } from "semantic-ui-react";
 import cuid from "cuid";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { createEvent, updateEvent } from "../eventActions";
 
-export default function EventForm({
-  setFormOpen,
-  setEvents,
-  createEvent,
-  selectedEvent,
-  updateEvent,
-}) {
+export default function EventForm({ match, history }) {
+  const dispatch = useDispatch();
+
+  const selectedEvent = useSelector((state) =>
+    state.eventsState.events.find((e) => e.id === match.params.id)
+  );
+
   const initialValues = selectedEvent ?? {
     title: "",
     category: "",
@@ -24,23 +26,27 @@ export default function EventForm({
   function handleFormSubmit() {
     // case of EditEvent
     selectedEvent
-      ? updateEvent(
-          // spread all the values (form uses less values)
-          {
-            ...selectedEvent,
-            // values changed in the form will overwrite the old ones
-            ...values,
-          }
+      ? dispatch(
+          updateEvent(
+            // spread all the values (form uses less values)
+            {
+              ...selectedEvent,
+              // values changed in the form will overwrite the old ones
+              ...values,
+            }
+          )
         )
       : // NEW EVENT
-        createEvent({
-          ...values,
-          id: cuid(),
-          hostedBy: "Bob",
-          attendees: [],
-          hostPhotoURL: "./assets/user.png",
-        });
-    setFormOpen(false);
+        dispatch(
+          createEvent({
+            ...values,
+            id: cuid(),
+            hostedBy: "Bob",
+            attendees: [],
+            hostPhotoURL: "./assets/user.png",
+          })
+        );
+    history.push("/events");
   }
 
   function handleInputChange(e) {
@@ -112,7 +118,7 @@ export default function EventForm({
           floated="right"
           content="Cancel"
           as={Link}
-          to='/events'
+          to="/events"
         />
       </Form>
     </Segment>
