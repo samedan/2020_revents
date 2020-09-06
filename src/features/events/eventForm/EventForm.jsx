@@ -1,3 +1,4 @@
+/* global google */
 import React from "react";
 import { Segment, Header, Button } from "semantic-ui-react";
 import cuid from "cuid";
@@ -11,6 +12,7 @@ import MyTextArea from "../../../app/common/form/MyTextArea";
 import MySelectInput from "../../../app/common/form/MySelectInput";
 import MyDateInput from "../../../app/common/form/MyDateInput";
 import { categoryData } from "../../../app/api/categoryOptions";
+import MyPlaceInput from "../../../app/common/form/MyPlaceInput";
 
 export default function EventForm({ match, history }) {
   const dispatch = useDispatch();
@@ -23,17 +25,27 @@ export default function EventForm({ match, history }) {
     title: "",
     category: "",
     description: "",
-    city: "",
-    venue: "",
+    city: {
+      address: "",
+      latLng: null,
+    },
+    venue: {
+      address: "",
+      latLng: null,
+    },
     date: "",
   };
 
   const validationSchema = Yup.object({
-    title: Yup.string().required("You must provide a title"),
-    category: Yup.string().required("You must provide a category"),
-    description: Yup.string().required("You must provide a description"),
-    city: Yup.string().required("You must provide a city"),
-    venue: Yup.string().required("You must provide a venue"),
+    title: Yup.string().required("You must provide a Title"),
+    category: Yup.string().required("You must provide a Category"),
+    description: Yup.string().required("You must provide a Description"),
+    city: Yup.object().shape({
+      address: Yup.string().required("You must provide a City"),
+    }),
+    venue: Yup.object().shape({
+      address: Yup.string().required("You must provide a Venue"),
+    }),
     date: Yup.string().required("You must provide a date"),
   });
 
@@ -69,7 +81,7 @@ export default function EventForm({ match, history }) {
         }}
       >
         {/* Data sent from Formik to the submit button to know if dirty or not */}
-        {({ isSubmitting, dirty, isValid }) => (
+        {({ isSubmitting, dirty, isValid, values }) => (
           <Form className="ui form">
             <Header sub color="teal" content="Event details" />
             <MyTextInput name="title" placeholder="Event Title" />
@@ -80,8 +92,17 @@ export default function EventForm({ match, history }) {
             />
             <MyTextArea name="description" placeholder="Description" rows="3" />
             <Header sub color="teal" content="Event Location details" />
-            <MyTextInput name="city" placeholder="City" />
-            <MyTextInput name="venue" placeholder="Venue" />
+            <MyPlaceInput name="city" placeholder="City" />
+            <MyPlaceInput
+              disabled={!values.city.latLng}
+              name="venue"
+              placeholder="Venue"
+              options={{
+                location: new google.maps.LatLng(values.city.latLng),
+                radius: 1000, // km
+                types: ["establishment"],
+              }}
+            />
             <MyDateInput
               name="date"
               tilmeFormat="HH:mm"
