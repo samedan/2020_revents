@@ -1,4 +1,5 @@
 import firebase from '../config/firebase'
+import { cuid } from 'cuid';
 
 
 const db = firebase.firestore();
@@ -24,7 +25,32 @@ export function dataFromSnapshot(snapshot) {
         }
 }
 
+// GET ALL EVENTS
+export function listenToEventsFromFirestore() {
+    return db.collection('events');
+}
 
-export function getEventsFromFirestore(observer) {
-    return db.collection('events').onSnapshot(observer);
+// GET SINGLE EVENT
+export function listenToEventFromFirestore(eventId) {
+    return db.collection('events').doc(eventId);
+}
+
+// POST EVENT
+export function addEventToFirestore(event) {
+    return db.collection('events').add({
+        ...event,
+        hostedBy: 'Diana',
+        hostPhotoURL: 'https://www.randomlists.com/img/animals/salamander.jpg',
+        // array.push in firebase
+        attendees: firebase.firestore.FieldValue.arrayUnion({
+            id: cuid(),
+            displayName: 'Diana',
+            photoURL: 'https://www.randomlists.com/img/animals/salamander.jpg',
+        })
+    })
+}
+
+// UPDATE EVENT
+export function updateEventInFirestore(event) {
+    return db.collection('events').doc(event.id).update(event);
 }

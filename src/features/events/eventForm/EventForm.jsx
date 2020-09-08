@@ -2,7 +2,7 @@
 import React from "react";
 import { Segment, Header, Button } from "semantic-ui-react";
 import cuid from "cuid";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { createEvent, updateEvent } from "../eventActions";
 import { Formik, Form } from "formik";
@@ -13,6 +13,10 @@ import MySelectInput from "../../../app/common/form/MySelectInput";
 import MyDateInput from "../../../app/common/form/MyDateInput";
 import { categoryData } from "../../../app/api/categoryOptions";
 import MyPlaceInput from "../../../app/common/form/MyPlaceInput";
+import { listenToEventFromFirestore } from "../../../app/firestore/firestoreService";
+import useFirestoreDoc from "./../../../app/hooks/useFirestoreDoc";
+import { listenToEvents } from "./../eventActions";
+import LoadingComponent from "./../../../app/layout/LoadingComponent";
 
 export default function EventForm({ match, history }) {
   const dispatch = useDispatch();
@@ -20,6 +24,8 @@ export default function EventForm({ match, history }) {
   const selectedEvent = useSelector((state) =>
     state.eventsState.events.find((e) => e.id === match.params.id)
   );
+
+  const { loading, error } = useSelector((state) => state.async);
 
   const initialValues = selectedEvent ?? {
     title: "",
@@ -36,6 +42,7 @@ export default function EventForm({ match, history }) {
     date: "",
   };
 
+  // VALIDATION
   const validationSchema = Yup.object({
     title: Yup.string().required("You must provide a Title"),
     category: Yup.string().required("You must provide a Category"),
@@ -48,6 +55,18 @@ export default function EventForm({ match, history }) {
     }),
     date: Yup.string().required("You must provide a date"),
   });
+
+  // read event from firestore
+  useFirestoreDoc({
+    query: () => listenToEventFromFirestore(match.params.id),
+    data: (event) => dispatch(listenToEvents([event])),
+    deps: [match.params.id, dispatch],
+  });
+
+  if (loading || (!selectedEvent && !error)) {
+    return <LoadingComponent content="Loading event..." />;
+  }
+  if (error) return <Redirect to="/error" />;
 
   return (
     <Segment clearing>

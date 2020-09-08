@@ -12,9 +12,10 @@ export function asyncActionFinish () {
         type: ASYNC_ACTION_FINISH
     }
 }
-export function asyncActionError () {
+export function asyncActionError (error) {
     return {
-        type: ASYNC_ACTION_ERROR
+        type: ASYNC_ACTION_ERROR,
+        payload: error
     }
 }
 

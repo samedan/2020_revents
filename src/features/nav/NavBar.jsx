@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Menu, Container, Button } from "semantic-ui-react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import SignedOutMenu from "./SignedOutMenu";
 import SignedInMenu from "./SignedInMenu";
 import { useSelector } from "react-redux";
@@ -14,7 +14,7 @@ export default function NavBar({ setFormOpen }) {
       <Container>
         <Menu.Item as={NavLink} exact to="/" header>
           <img
-            src="./assets/logo.png"
+            src="/assets/logo.png"
             alt="logo"
             style={{ marginRight: "15px" }}
           />
