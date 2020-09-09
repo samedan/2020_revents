@@ -8,11 +8,11 @@ import { useDispatch } from "react-redux";
 import { closeModal } from "../../app/common/modals/modalReducer";
 import { signInWithEmail } from "./../../app/firestore/firebaseService";
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const dispatch = useDispatch();
 
   return (
-    <ModalWrapper size="mini" header="Sign in to ReVents">
+    <ModalWrapper size="mini" header="Register to ReVents">
       <Formik
         initialValues={{
           email: "",
@@ -42,6 +42,7 @@ export default function LoginForm() {
       >
         {({ isSubmitting, isValid, dirty }) => (
           <Form className="ui form">
+            <MyTextInput name="edispalyName" placeholder="Display name" />
             <MyTextInput name="email" placeholder="Email Adress" />
             <MyTextInput
               name="password"
