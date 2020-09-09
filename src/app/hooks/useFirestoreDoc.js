@@ -4,10 +4,14 @@ import { useEffect } from 'react';
 import { asyncActionStart, asyncActionFinish, asyncActionError } from './../async/asyncReducer';
 import { dataFromSnapshot } from './../firestore/firestoreService';
 
-export default function useFirestoreDoc({query, data, deps}) {
+export default function useFirestoreDoc({query, data, deps, shouldExecute=true}) {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        // case for a new event 
+        if(!shouldExecute) return;
+
+
         dispatch(asyncActionStart())
 
         const unsubscribe = query().onSnapshot(
@@ -23,7 +27,9 @@ export default function useFirestoreDoc({query, data, deps}) {
                 data(dataFromSnapshot(snapshot));
                 dispatch(asyncActionFinish());
             },
-            error => dispatch(asyncActionError())
+            error => {
+                console.log(error);
+                dispatch(asyncActionError());}
         );
 
         return () => {unsubscribe();}

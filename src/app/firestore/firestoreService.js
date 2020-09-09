@@ -1,5 +1,5 @@
 import firebase from '../config/firebase'
-import { cuid } from 'cuid';
+import cuid from 'cuid';
 
 
 const db = firebase.firestore();
@@ -27,7 +27,7 @@ export function dataFromSnapshot(snapshot) {
 
 // GET ALL EVENTS
 export function listenToEventsFromFirestore() {
-    return db.collection('events');
+    return db.collection('events').orderBy('date');
 }
 
 // GET SINGLE EVENT
@@ -37,6 +37,7 @@ export function listenToEventFromFirestore(eventId) {
 
 // POST EVENT
 export function addEventToFirestore(event) {
+    console.log(event);
     return db.collection('events').add({
         ...event,
         hostedBy: 'Diana',
@@ -53,4 +54,16 @@ export function addEventToFirestore(event) {
 // UPDATE EVENT
 export function updateEventInFirestore(event) {
     return db.collection('events').doc(event.id).update(event);
+}
+
+// DELETE event
+export function deleteEventInFirestore(eventId) {
+    return db.collection('events').doc(eventId).delete();
+}
+
+// Cancel event
+export function cancelEventToggle(event) {
+    return db.collection('events').doc(event.id).update({
+        isCancelled: !event.isCancelled
+    })
 }

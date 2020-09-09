@@ -19,7 +19,7 @@ export default function EventDetailedPage({ match }) {
   );
   const { loading, error } = useSelector((state) => state.async);
 
-  // read event from firestore
+  // GET event from firestore
   useFirestoreDoc({
     query: () => listenToEventFromFirestore(match.params.id),
     data: (event) => dispatch(listenToEvents([event])),
