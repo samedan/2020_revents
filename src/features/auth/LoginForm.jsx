@@ -3,7 +3,7 @@ import ModalWrapper from "../../app/common/modals/ModalWrapper";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import MyTextInput from "../../app/common/form/MyTextInput";
-import { Button } from "semantic-ui-react";
+import { Button, Label } from "semantic-ui-react";
 import { useDispatch } from "react-redux";
 import { closeModal } from "../../app/common/modals/modalReducer";
 import { signInWithEmail } from "./../../app/firestore/firebaseService";
@@ -27,7 +27,7 @@ export default function LoginForm() {
         onSubmit={async (
           values,
           // use 'setSubmitting' from Formik to change the icon
-          { setSubmitting }
+          { setSubmitting, setErrors }
         ) => {
           try {
             // firebaseService
@@ -35,12 +35,15 @@ export default function LoginForm() {
             setSubmitting(false);
             dispatch(closeModal());
           } catch (error) {
+            // 'setErrors' from Formik transfers the errors to the Form
+            // we give the message a 'key'=auth to use it
+            setErrors({ auth: error.message });
             setSubmitting(false);
-            console.log(error);
+            // console.log(error);
           }
         }}
       >
-        {({ isSubmitting, isValid, dirty }) => (
+        {({ isSubmitting, isValid, dirty, errors }) => (
           <Form className="ui form">
             <MyTextInput name="email" placeholder="Email Adress" />
             <MyTextInput
@@ -48,6 +51,16 @@ export default function LoginForm() {
               placeholder="Password"
               type="password"
             />
+            {/* // Formik errors */}
+            {errors.auth && (
+              <Label
+                basic
+                color="red"
+                style={{ marginBottom: 10 }}
+                // content={errors.auth}
+                content={"The login credentials are not correct."}
+              />
+            )}
 
             <Button
               loading={isSubmitting}
