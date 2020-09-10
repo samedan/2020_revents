@@ -28,7 +28,7 @@ export default function SignedInMenu() {
           spaced="right"
           src={currentUser.photoURL || "./assets/user.png"}
         />
-        <Dropdown pointing="top left" text={currentUser.email}>
+        <Dropdown pointing="top left" text={currentUser.displayName}>
           <Dropdown.Menu>
             <Dropdown.Item
               as={Link}
@@ -38,8 +38,14 @@ export default function SignedInMenu() {
             />
             <Dropdown.Item text="My profile" icon="user" />
             <Dropdown.Item
+              text="My account"
+              icon="settings"
+              as={Link}
+              to="/account"
+            />
+            <Dropdown.Item
               onClick={handleSignOut}
-              text="Signed out"
+              text="Sign out"
               icon="power"
             />
           </Dropdown.Menu>

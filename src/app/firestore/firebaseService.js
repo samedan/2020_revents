@@ -1,14 +1,18 @@
 import firebase from '../config/firebase'
 import { setUserProfileData } from './firestoreService';
+import { toast } from 'react-toastify';
 
+// SIGN IN with Email
 export function signInWithEmail(creds) {
     return firebase.auth().signInWithEmailAndPassword(creds.email, creds.password);
 }
 
+// SIGN OUT
 export function signOutFirebase() {
     return firebase.auth().signOut();
 }
 
+// REGISTER with Email
 export async function registerInFirebase(creds) {
     try {
         const result = await firebase.auth().createUserWithEmailAndPassword(creds.email, creds.password)
@@ -21,4 +25,34 @@ export async function registerInFirebase(creds) {
     } catch (error) {
         throw(error);
     }
+}
+
+// FACEBOOK
+export async function socialLogin(selectedProvider) {
+    let provider;
+    if(selectedProvider ==='facebook') {
+        provider = new firebase.auth.FacebookAuthProvider();
+    }
+    if(selectedProvider ==='google') {
+        provider = new firebase.auth.GoogleAuthProvider()
+    }
+
+    try {
+        const result = await firebase.auth().signInWithPopup(provider);
+        console.log(result);
+        // check if it's first time login(counts as register)
+        if(result.additionalUserInfo.isNewUser){
+            await setUserProfileData(result.user);
+        }
+
+    } catch (error) {
+        toast.error(error.message)
+    }
+}
+
+// CHANGE PASSWORD
+export function updateUserPassword(creds) {
+    const user = firebase.auth().currentUser;
+    console.log(user);
+    return user.updatePassword(creds.newPassword1);
 }
