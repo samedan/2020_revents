@@ -12,6 +12,7 @@ export function signOutFirebase() {
     return firebase.auth().signOut();
 }
 
+
 // REGISTER with Email
 export async function registerInFirebase(creds) {
     try {

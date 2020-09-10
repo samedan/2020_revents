@@ -17,7 +17,7 @@ export function verifyAuth() {
     return firebase.auth().onAuthStateChanged(user => {
       if(user) {
         dispatch(signInUser(user));
-        dispatch({type: APP_LOADED})
+        dispatch({type:  APP_LOADED})
       } else {
         dispatch(signOutUser())
         dispatch({type: APP_LOADED})

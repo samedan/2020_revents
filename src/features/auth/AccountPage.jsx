@@ -14,7 +14,7 @@ export default function AccountPage() {
       <Header dividing size="large" content="Account" />
       {currentUser.providerId === "password" && (
         <>
-          <Header color="teal" sub content="Change Password" />
+          <Header color="teal" sub content="Change Password " />
           <p>Use this form to change your password</p>
           <Formik
             initialValues={{ newPassword1: "", newPassword2: "" }}

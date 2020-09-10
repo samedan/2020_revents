@@ -55,7 +55,7 @@ export default function RegisterForm() {
             <MyTextInput name="email" placeholder="Email Adress" />
             <MyTextInput
               name="password"
-              placeholder="Password"
+              placeholder="Password "
               type="password"
             />
             {errors.auth && (

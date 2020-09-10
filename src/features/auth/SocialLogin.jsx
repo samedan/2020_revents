@@ -20,7 +20,7 @@ export default function SocialLogin() {
         fluid
         color="facebook"
         style={{ marginBottom: 10 }}
-        content="Login with Facebook"
+        content="Login with Facebook "
       />
       <Button
         onClick={() => handleSocialLogin("google")}

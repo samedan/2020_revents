@@ -4,6 +4,7 @@ import 'firebase/database';
 import 'firebase/auth';
 import 'firebase/storage';
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyAb99g5tAmCKaRjwQ_4fkEP4D4tlfxnLXI",
     authDomain: "revents-dbb-2020.firebaseapp.com",

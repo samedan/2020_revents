@@ -1,3 +1,4 @@
+
 export const categoryData = [
   { key: "drinks", text: "Drinks", value: "drinks" },
   { key: "culture", text: "Culture", value: "culture" },

@@ -59,7 +59,7 @@ export default function LoginForm() {
                 color="red"
                 style={{ marginBottom: 10 }}
                 // content={errors.auth}
-                content={"The login credentials are not correct."}
+                content={"The login credentials are not correct"}
               />
             )}
 

@@ -12,6 +12,7 @@ const rootReducer = combineReducers({
   eventsState: eventReducer,
   modals: modalReducer,
   auth: authReducer,
+  
   async: asyncReducer
 });
 

@@ -25,4 +25,5 @@ export default function modalReducer(state = initialState, { type, payload }) {
     default:
       return state;
   }
+
 }

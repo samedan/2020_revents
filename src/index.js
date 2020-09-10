@@ -15,8 +15,6 @@ import ScrollToTop from './app/layout/ScrollToTop';
 const store= configureStore();
 
 
-
-
 const rootEl = document.getElementById('root');
 
 // function render() {

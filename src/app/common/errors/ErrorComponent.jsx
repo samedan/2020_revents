@@ -11,7 +11,7 @@ export default function ErrorComponent() {
       <Header
         textAlign="center"
         content={error?.message || "Ooops, we have an error"}
-      />
+      />{" "}
       <Button
         as={Link}
         to="/events"
