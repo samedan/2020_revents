@@ -6,14 +6,15 @@ import authReducer from "../../features/auth/authReducer";
 import asyncReducer from "../async/asyncReducer";
 
 // import modalReducer from "./../../common/modals/modalReducer";
+import profileReducer from './../../features/profiles/profileReducer';
 
 const rootReducer = combineReducers({
   test: testReducer,
   eventsState: eventReducer,
   modals: modalReducer,
   auth: authReducer,
-  
-  async: asyncReducer
+  async: asyncReducer,
+  profile: profileReducer
 });
 
 export default rootReducer;

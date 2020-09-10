@@ -57,3 +57,5 @@ export function updateUserPassword(creds) {
     console.log(user);
     return user.updatePassword(creds.newPassword1);
 }
+
+

@@ -6,6 +6,7 @@ import MyTextInput from "../../app/common/form/MyTextInput";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { updateUserPassword } from "../../app/firestore/firebaseService";
+import { toast } from "react-toastify";
 
 export default function AccountPage() {
   const { currentUser } = useSelector((state) => state.auth);
@@ -28,6 +29,7 @@ export default function AccountPage() {
             onSubmit={async (values, { setSubmitting, setErrors }) => {
               try {
                 await updateUserPassword(values);
+                toast.success("Password succesfully changed");
               } catch (error) {
                 setErrors({ auth: error.message });
               } finally {
