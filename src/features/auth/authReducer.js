@@ -5,7 +5,8 @@ const initialState = {
   currentUser: null
 };
 
-export default function authReducer(state = initialState, { type, payload }) {
+export default function authReducer(state = initialState, 
+  { type, payload }) {
   switch (type) {
     case SIGN_IN_USER:
       return {

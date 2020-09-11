@@ -4,10 +4,15 @@ import { Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { signOutFirebase } from "../../app/firestore/firebaseService";
 import { toast } from "react-toastify";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default function SignedInMenu() {
   // const { currentUser } = useSelector((state) => state.auth);
   const { currentUserProfile } = useSelector((state) => state.profile);
+  console.log(currentUserProfile);
+
+  const { loading } = useSelector((state) => state.async);
+
   // redirect to '/'
   const history = useHistory();
 
@@ -21,13 +26,15 @@ export default function SignedInMenu() {
     }
   }
 
+  if (loading || !currentUserProfile)
+    return <LoadingComponent content="Loading profile..." />;
   return (
     <>
       <Menu.Item position="right">
         <Image
           avatar
           spaced="right"
-          src={currentUserProfile.photoURL || "/assets/user.png"}
+          src={currentUserProfile?.photoURL || "/assets/user.png"}
         />
         <Dropdown pointing="top left" text={currentUserProfile.displayName}>
           <Dropdown.Menu>

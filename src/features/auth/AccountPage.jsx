@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 export default function AccountPage() {
   const { currentUser } = useSelector((state) => state.auth);
+
   return (
     <Segment>
       <Header dividing size="large" content="Account" />
@@ -87,7 +88,7 @@ export default function AccountPage() {
       {currentUser.providerId === "google.com" && (
         <>
           <Header color="teal" sub content="Google account" />
-          <p>Please visit Facebook to update your account</p>
+          <p>Please visit Google to update your account</p>
           <Button
             icon="google"
             color="google plus"
