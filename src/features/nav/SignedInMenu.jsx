@@ -9,7 +9,7 @@ import LoadingComponent from "../../app/layout/LoadingComponent";
 export default function SignedInMenu() {
   // const { currentUser } = useSelector((state) => state.auth);
   const { currentUserProfile } = useSelector((state) => state.profile);
-  console.log(currentUserProfile);
+  // console.log(currentUserProfile);
 
   const { loading } = useSelector((state) => state.async);
 
