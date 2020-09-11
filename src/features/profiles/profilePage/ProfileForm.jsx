@@ -1,21 +1,32 @@
 import React from "react";
-import { Formik } from "formik";
-import { Form, Button } from "semantic-ui-react";
+import { Formik, Form } from "formik";
+import { Button } from "semantic-ui-react";
 import MyTextInput from "./../../../app/common/form/MyTextInput";
 import MyTextArea from "./../../../app/common/form/MyTextArea";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
+import { updateUserProfile } from "../../../app/firestore/firestoreService";
 
 export default function ProfileForm({ profile }) {
   return (
     <Formik
       initialValues={{
         displayName: profile.displayName,
-        description: profile.description,
+        description: profile.description || "",
       }}
       validationSchema={Yup.object({
         displayName: Yup.string().required(),
       })}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          await updateUserProfile(values);
+          toast.success("Profile updated successfully");
+        } catch (error) {
+          toast.error(error.message);
+        } finally {
+          setSubmitting(false);
+        }
+      }}
     >
       {({ isSubmitting, isValid, dirty }) => (
         <Form className="ui form">
@@ -23,8 +34,8 @@ export default function ProfileForm({ profile }) {
           <MyTextArea name="description" placeholder="Description" />
           <Button
             loading={isSubmitting}
-            floated="right"
             disabled={isSubmitting || !isValid || !dirty}
+            floated="right"
             type="submit"
             size="large"
             positive

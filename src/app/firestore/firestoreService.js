@@ -83,3 +83,22 @@ export function setUserProfileData(user) {
 export function getUserProfile(userId) {
     return db.collection('users').doc(userId)
 }
+
+// UPDATE USER Profile
+export async function updateUserProfile(profile) {
+    const user = firebase.auth().currentUser;
+    try {
+        // updates the Login userName
+        if(user.displayName !== profile.displayName){
+            console.log(user.displayName);
+            console.log(profile.displayName);
+            await user.updateProfile({
+                displayName: profile.displayName
+            })            
+        }
+        // updates OUR database with teh rest of the user info (description)
+        return await db.collection('users').doc(user.uid).update(profile);
+    } catch (error) {
+        throw error;
+    }
+}
