@@ -1,5 +1,4 @@
 import firebase from "../config/firebase";
-// import cuid from "cuid";
 
 const db = firebase.firestore();
 
@@ -24,9 +23,46 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
-// GET ALL EVENTS
-export function listenToEventsFromFirestore() {
-  return db.collection("events").orderBy("date");
+// GET ALL EVENTS with PREDICATE Filter
+// Predicate on Event Dashboard
+export function listenToEventsFromFirestore(predicate) {
+  const user = firebase.auth().currentUser;
+
+  let eventsRef = db.collection("events").orderBy("date");
+  // run Firebase query
+  switch (predicate.get("filter")) {
+    case "isGoing":
+      return eventsRef
+        .where("attendeesIds", "array-contains", user.uid)
+        .where("date", ">=", predicate.get("startDate"));
+    case "isHost":
+      return eventsRef
+        .where("hostUid", "==", user.uid)
+        .where("date", ">=", predicate.get("startDate"));
+    default:
+      return eventsRef.where("date", ">=", predicate.get("startDate"));
+  }
+}
+
+// GET User EVENTS with Query filter
+// Predicate on EventsTab
+export function getUserEventsQuery(activeTab, userUid) {
+  let eventsRef = db.collection("events");
+  const today = new Date();
+  switch (activeTab) {
+    case 1: // past events
+      return eventsRef
+        .where("attendeesIds", "array-contains", userUid)
+        .where("date", "<=", today)
+        .orderBy("date", "desc"); // most recent events first;
+    case 2: /// hosting
+      return eventsRef.where("hostUid", "==", userUid).orderBy("date");
+    default:
+      return eventsRef
+        .where("attendeesIds", "array-contains", userUid)
+        .where("date", ">=", today)
+        .orderBy("date");
+  }
 }
 
 // GET SINGLE EVENT
