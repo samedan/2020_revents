@@ -1,157 +1,206 @@
-import firebase from '../config/firebase'
-import cuid from 'cuid';
-
+import firebase from "../config/firebase";
+// import cuid from "cuid";
 
 const db = firebase.firestore();
 
 // shape the data coming from google
 export function dataFromSnapshot(snapshot) {
-    if(!snapshot.exists) return undefined;
-        const data = snapshot.data();
+  if (!snapshot.exists) return undefined;
+  const data = snapshot.data();
 
-        // transform 'date'
-        for (const prop in data) {
-            if(data.hasOwnProperty(prop)) {
-                if(data[prop] instanceof firebase.firestore.Timestamp) {
-                    data[prop] = data[prop].toDate()
-                }
-            }
-        }
+  // transform 'date'
+  for (const prop in data) {
+    if (data.hasOwnProperty(prop)) {
+      if (data[prop] instanceof firebase.firestore.Timestamp) {
+        data[prop] = data[prop].toDate();
+      }
+    }
+  }
 
-        return {
-            ...data,
-            // adding data coming back
-            id: snapshot.id
-        }
+  return {
+    ...data,
+    // adding data coming back
+    id: snapshot.id,
+  };
 }
 
 // GET ALL EVENTS
 export function listenToEventsFromFirestore() {
-    return db.collection('events').orderBy('date');
+  return db.collection("events").orderBy("date");
 }
 
 // GET SINGLE EVENT
 export function listenToEventFromFirestore(eventId) {
-    return db.collection('events').doc(eventId);
+  return db.collection("events").doc(eventId);
 }
 
 // POST EVENT
 export function addEventToFirestore(event) {
-    console.log(event);
-    return db.collection('events').add({
-        ...event,
-        hostedBy: 'Diana',
-        hostPhotoURL: 'https://www.randomlists.com/img/animals/salamander.jpg',
-        // array.push in firebase
-        attendees: firebase.firestore.FieldValue.arrayUnion({
-            id: cuid(),
-            displayName: 'Diana',
-            photoURL: 'https://www.randomlists.com/img/animals/salamander.jpg',
-        })
-    })
+  // currently logged in user
+  const user = firebase.auth().currentUser;
+  console.log(event);
+  return db.collection("events").add({
+    ...event,
+    hostUid: user.uid, // used to check what events the user is hosting
+    hostedBy: user.displayName,
+    hostPhotoURL: user.photoURL || null,
+    // array.push in firebase
+    attendees: firebase.firestore.FieldValue.arrayUnion({
+      id: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL || null,
+    }),
+    // string based arrays
+    attendeesIds: firebase.firestore.FieldValue.arrayUnion(user.uid),
+  });
 }
 
 // UPDATE EVENT
 export function updateEventInFirestore(event) {
-    return db.collection('events').doc(event.id).update(event);
+  return db.collection("events").doc(event.id).update(event);
 }
-
 
 // DELETE event
 export function deleteEventInFirestore(eventId) {
-    return db.collection('events').doc(eventId).delete();
+  return db.collection("events").doc(eventId).delete();
 }
 
 // Cancel event
 export function cancelEventToggle(event) {
-    return db.collection('events').doc(event.id).update({
-        isCancelled: !event.isCancelled
-    })
+  return db.collection("events").doc(event.id).update({
+    isCancelled: !event.isCancelled,
+  });
 }
 
 // POST New USER to firebase on Register
 export function setUserProfileData(user) {
-    return db.collection('users').doc(user.uid).set({
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL || null,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    })
+  return db
+    .collection("users")
+    .doc(user.uid)
+    .set({
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
 }
 
 // GET USER PROFILE
 export function getUserProfile(userId) {
-    return db.collection('users').doc(userId)
+  return db.collection("users").doc(userId);
 }
 
 // UPDATE USER Profile
 export async function updateUserProfile(profile) {
-    const user = firebase.auth().currentUser;
-    try {
-        // updates the Login userName
-        if(user.displayName !== profile.displayName){
-            console.log(user.displayName);
-            console.log(profile.displayName);
-            await user.updateProfile({
-                displayName: profile.displayName
-            })            
-        }
-        // updates OUR database with teh rest of the user info (description)
-        return await db.collection('users').doc(user.uid).update(profile);
-    } catch (error) {
-        throw error;
+  const user = firebase.auth().currentUser;
+  try {
+    // updates the Login userName
+    if (user.displayName !== profile.displayName) {
+      console.log(user.displayName);
+      console.log(profile.displayName);
+      await user.updateProfile({
+        displayName: profile.displayName,
+      });
     }
+    // updates OUR database with teh rest of the user info (description)
+    return await db.collection("users").doc(user.uid).update(profile);
+  } catch (error) {
+    throw error;
+  }
 }
 
 // UPDATE User Profile PHOTO
 export async function updateUserProfilePhoto(downloadURL, filename) {
-    const user = firebase.auth().currentUser;
-    const userDocRef = db.collection('users').doc(user.uid);
-    try {
-        const userDoc = await userDocRef.get();
-        // if the user has no current photo
-        if(!userDoc.data().photoURL) {
-            await db.collection('users').doc(user.uid).update({
-                photoURL: downloadURL
-            });
-            await user.updateProfile({
-                photoURL: downloadURL
-            })
-        }
-        return await db.collection('users').doc(user.uid).collection('photos').add({
-            name: filename,
-            url: downloadURL
-        })
-    } catch (error) {
-        throw error;
+  const user = firebase.auth().currentUser;
+  const userDocRef = db.collection("users").doc(user.uid);
+  try {
+    const userDoc = await userDocRef.get();
+    // if the user has no current photo
+    if (!userDoc.data().photoURL) {
+      await db.collection("users").doc(user.uid).update({
+        photoURL: downloadURL,
+      });
+      await user.updateProfile({
+        photoURL: downloadURL,
+      });
     }
+    return await db.collection("users").doc(user.uid).collection("photos").add({
+      name: filename,
+      url: downloadURL,
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 // GET user Photos from Firebase
 export function getUserPhotos(userUid) {
-    return db.collection('users').doc(userUid).collection('photos')
-
+  return db.collection("users").doc(userUid).collection("photos");
 }
 
 // UPDATE set Main Photo
 export async function setMainPhoto(photo) {
-    const user = firebase.auth().currentUser;
-    try {
-        // update photo user
-        await db.collection('users').doc(user.uid).update({
-            photoURL: photo.url
-        })
-        // update profile (auth)
-        return await user.updateProfile({
-            photoURL: photo.url
-        })
-    } catch (error) {
-        throw(error.message)
-    }
+  const user = firebase.auth().currentUser;
+  try {
+    // update photo user
+    await db.collection("users").doc(user.uid).update({
+      photoURL: photo.url,
+    });
+    // update profile (auth)
+    return await user.updateProfile({
+      photoURL: photo.url,
+    });
+  } catch (error) {
+    throw error.message;
+  }
 }
 
 // UPDATE DELETE PHOTO
 export function deletePhotoFromCollection(photoId) {
-    const userUid = firebase.auth().currentUser.uid;
-    return db.collection('users').doc(userUid).collection('photos').doc(photoId).delete();
+  const userUid = firebase.auth().currentUser.uid;
+  return db
+    .collection("users")
+    .doc(userUid)
+    .collection("photos")
+    .doc(photoId)
+    .delete();
+}
+
+// POST Add User ATTENDANCE
+export function addUserAttendance(event) {
+  const user = firebase.auth().currentUser;
+  return db
+    .collection("events")
+    .doc(event.id)
+    .update({
+      attendees: firebase.firestore.FieldValue.arrayUnion({
+        id: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL || null,
+      }),
+      // string based arrays
+      attendeesIds: firebase.firestore.FieldValue.arrayUnion(user.uid),
+    });
+}
+
+// POST Cancel user Attendance
+export async function cancelUserAttendance(event) {
+  const user = firebase.auth().currentUser;
+  try {
+    const eventDoc = await db.collection("events").doc(event.id).get();
+    console.log(eventDoc);
+    return db
+      .collection("events")
+      .doc(event.id)
+      .update({
+        // first array of simple strings
+        attendeesIds: firebase.firestore.FieldValue.arrayRemove(user.uid),
+        // second array of Objects
+        attendees: eventDoc
+          .data()
+          .attendees.filter((attendee) => attendee.id !== user.uid),
+      });
+  } catch (error) {
+    throw error;
+  }
 }

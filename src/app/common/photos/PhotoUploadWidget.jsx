@@ -6,10 +6,7 @@ import cuid from "cuid";
 import { getFileExtension } from "../util/util";
 import { uploadToFirebasestorage } from "../../firestore/firebaseService";
 import { toast } from "react-toastify";
-import {
-  updateUserProfile,
-  updateUserProfilePhoto,
-} from "../../firestore/firestoreService";
+import { updateUserProfilePhoto } from "../../firestore/firestoreService";
 
 export default function PhotoUploadWidget({ setEditMode }) {
   const [files, setFiles] = useState([]);
