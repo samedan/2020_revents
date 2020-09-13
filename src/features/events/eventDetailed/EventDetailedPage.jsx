@@ -37,17 +37,22 @@ export default function EventDetailedPage({ match }) {
   if (error) return <Redirect to="/error" />;
 
   return (
-    <Grid>
-      <Grid.Column width={10}>
-        <EventDetailedHeader event={event} isGoing={isGoing} isHost={isHost} />
-        <EventDetailedInfo event={event} />
-        <EventDetailedChat event={event} />
-      </Grid.Column>
+    <Grid
+      // columns become rows
+      stackable
+      // change order in height on mobile
+      reversed="computer"
+    >
       <Grid.Column width={6}>
         <EventDetailedSidebar
           hostUid={event.hostUid}
           attendees={event?.attendees}
         />
+      </Grid.Column>
+      <Grid.Column width={10}>
+        <EventDetailedHeader event={event} isGoing={isGoing} isHost={isHost} />
+        <EventDetailedInfo event={event} />
+        <EventDetailedChat event={event} />
       </Grid.Column>
     </Grid>
   );

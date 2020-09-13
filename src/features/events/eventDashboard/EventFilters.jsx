@@ -27,6 +27,13 @@ export default function EventFilters({ setPredicate, predicate, loading }) {
           active={predicate.get("filter") === "isHost"}
           onClick={() => setPredicate("filter", "isHost")}
         />
+
+        <Menu.Item
+          disabled={loading}
+          content="Past Events"
+          active={predicate.get("filter") === "pastEvents"}
+          onClick={() => setPredicate("filter", "pastEvents")}
+        />
       </Menu>
       <Header icon="calendar" attached color="teal" content="Select date" />
       <Calendar

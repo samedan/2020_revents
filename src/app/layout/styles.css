@@ -40,3 +40,31 @@ body {
   border: none;
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
 }
+
+.event-list-item-title {
+  font-size: 1.3em !important;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #4183c4;
+}
+
+.event-list-item-date i.icon {
+  color: #4183c4;
+}
+.event-list-item-description {
+  padding-bottom: 10px;
+  color: #666666;
+}
+
+@media (min-width: 1px) and (max-width: 600px) {
+  .event-list-item {
+    margin: 0 !important;
+  }
+  .event-detailed-sidebar-sidebar {
+    display: flex;
+    flex-direction: row;
+  }
+  /* .event-detailed-sidebar-image {
+    width: 100px !important;
+  } */
+}

@@ -27,7 +27,8 @@ export function dataFromSnapshot(snapshot) {
 // Predicate on Event Dashboard
 export function listenToEventsFromFirestore(predicate) {
   const user = firebase.auth().currentUser;
-
+  console.log(user);
+  const today = new Date();
   let eventsRef = db.collection("events").orderBy("date");
   // run Firebase query
   switch (predicate.get("filter")) {
@@ -39,6 +40,10 @@ export function listenToEventsFromFirestore(predicate) {
       return eventsRef
         .where("hostUid", "==", user.uid)
         .where("date", ">=", predicate.get("startDate"));
+    case "pastEvents":
+      return eventsRef
+        .where("attendeesIds", "array-contains", user.uid)
+        .where("date", "<=", predicate.get("startDate"));
     default:
       return eventsRef.where("date", ">=", predicate.get("startDate"));
   }

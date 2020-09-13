@@ -1,5 +1,13 @@
 import React from "react";
-import { Segment, Item, Icon, List, Button, Label } from "semantic-ui-react";
+import {
+  Segment,
+  Item,
+  Icon,
+  List,
+  Button,
+  Label,
+  Grid,
+} from "semantic-ui-react";
 import EventListAttendee from "./EventListAttendee";
 import { Link } from "react-router-dom";
 
@@ -11,36 +19,54 @@ export default function EventListItem({ event }) {
     <Segment.Group>
       <Segment>
         <Item.Group>
-          <Item>
-            <Item.Image
-              size="tiny"
-              circular
-              src={event.hostPhotoURL || "/assets/user.png"}
-              title={event.hostedBy}
-            />
-            <Item.Content>
-              <Item.Header content={event.title} />
-              <Item.Description>
-                Hosted by{" "}
-                <Link to={`/profile/${event.hostUid}`}>{event.hostedBy}</Link>
-              </Item.Description>
-              {event.isCancelled && (
-                <Label
-                  style={{ top: "-40px" }}
-                  ribbon="right"
-                  color="red"
-                  content="This event has been cancelled"
+          <Item className="event-list-item">
+            <Grid>
+              <Grid.Column width={5}>
+                <Item.Image
+                  style={{ margin: 0 }}
+                  size="tiny"
+                  circular
+                  src={event.hostPhotoURL || "/assets/user.png"}
+                  title={event.hostedBy}
                 />
-              )}
-            </Item.Content>
+              </Grid.Column>
+              <Grid.Column width={11}>
+                <Item.Content style={{ margin: 0 }}>
+                  <Item.Header
+                    content={event.title}
+                    className="event-list-item-title"
+                  />
+                  <Item.Description>
+                    Hosted by{" "}
+                    <i>
+                      <Link to={`/profile/${event.hostUid}`}>
+                        {event.hostedBy}
+                      </Link>
+                    </i>
+                  </Item.Description>
+                  {event.isCancelled && (
+                    <Label
+                      style={{ top: "-40px" }}
+                      ribbon="right"
+                      color="red"
+                      content="This event has been cancelled"
+                    />
+                  )}
+                </Item.Content>
+              </Grid.Column>
+            </Grid>
           </Item>
         </Item.Group>
       </Segment>
       <Segment>
         <span>
           {/* <Icon name="clock" /> {event.date} */}
-          <Icon name="clock" /> {format(event.date, "MMMM d, yyyy h:mm a")}
-          <Icon name="marker" /> {event.venue.address}
+          <div className="event-list-item-date">
+            <Icon name="clock" /> {format(event.date, "MMMM d, yyyy h:mm a")}
+          </div>
+          <div className="event-list-item-date">
+            <Icon name="marker" /> {event.venue.address}
+          </div>
         </span>
       </Segment>
       <Segment secondary>
@@ -51,7 +77,7 @@ export default function EventListItem({ event }) {
         </List>
       </Segment>
       <Segment clearing>
-        <div>{event.description}</div>
+        <div className="event-list-item-description">{event.description}</div>
         <Button
           as={Link}
           to={`/events/${event.id}`}

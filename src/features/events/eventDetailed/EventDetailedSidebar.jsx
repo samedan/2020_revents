@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Item, Label } from "semantic-ui-react";
+import { Segment, Item, Label, Grid } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 export default function EventDetailedSidebar({ attendees, hostUid }) {
@@ -16,13 +16,18 @@ export default function EventDetailedSidebar({ attendees, hostUid }) {
         {attendees.length} {attendees.length > 1 ? "People" : "Person"} Going
       </Segment>
       <Segment attached>
-        <Item.Group relaxed divided>
+        <Item.Group
+          //  relaxed
+          divided
+          className="event-detailed-sidebar-sidebar"
+        >
           {attendees.map((attendee) => (
             <Item
               as={Link}
               to={`/profile/${attendee.id}`}
               key={attendee.id}
               style={{ position: "relative" }}
+              className="event-detailed-sidebar-image"
             >
               {hostUid === attendee.id && (
                 <Label
