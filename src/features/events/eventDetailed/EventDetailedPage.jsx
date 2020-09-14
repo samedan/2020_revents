@@ -52,7 +52,7 @@ export default function EventDetailedPage({ match }) {
       <Grid.Column width={10}>
         <EventDetailedHeader event={event} isGoing={isGoing} isHost={isHost} />
         <EventDetailedInfo event={event} />
-        <EventDetailedChat event={event} />
+        <EventDetailedChat event={event} eventId={event.id} />
       </Grid.Column>
     </Grid>
   );

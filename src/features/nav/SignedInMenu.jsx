@@ -36,7 +36,7 @@ export default function SignedInMenu() {
           spaced="right"
           src={currentUserProfile?.photoURL || "/assets/user.png"}
         />
-        <Dropdown pointing="top left" text={currentUserProfile?.displayName}>
+        <Dropdown pointing="top right" text={currentUserProfile?.displayName}>
           <Dropdown.Menu>
             <Dropdown.Item
               as={Link}

@@ -2,6 +2,17 @@ import firebase from '../config/firebase'
 import { setUserProfileData } from './firestoreService';
 import { toast } from 'react-toastify';
 
+// {{}, {}} => [ [{}], {}]
+export function firebaseObjectToArray (snapshot) {
+    if(snapshot) {
+        return Object.entries(snapshot).map(e => 
+            // [id, {stuff1, stuff2}] => [id, stuff1, stuff2 ]
+            Object.assign( {}, e[1], {id: e[0]} ) 
+        )
+    }
+}
+
+
 // SIGN IN with Email
 export function signInWithEmail(creds) {
     return firebase.auth().signInWithEmailAndPassword(creds.email, creds.password);
@@ -74,4 +85,26 @@ export function deleteFromFirebaseStorage(filename) {
 
     // delete from storage
     return photoRef.delete();
+}
+
+// POST Comment on Chat // REAL TIME DATABASE
+export function addEventChatComment(eventId, values) {
+    const user = firebase.auth().currentUser;
+    const newComment = {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        uid: user.uid,
+        text: values.comment,
+        date: Date.now(),
+        parentId: values.parentId
+
+
+    }
+    return firebase.database().ref(`chat/${eventId}`).push(newComment)
+}
+
+// GET Comments
+export function getEventChatRef(eventId) {
+    return firebase.database().ref(`chat/${eventId}`).orderByKey()
+
 }

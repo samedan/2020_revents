@@ -1,93 +1,109 @@
-import React from'react'
-import { Segment, Header, Comment, Form, Button } from 'semantic-ui-react'
+import React, { useEffect, useState } from "react";
+import { Segment, Header, Comment } from "semantic-ui-react";
+import EventDetailedChatForm from "./EventDetailedChatForm";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import {
+  getEventChatRef,
+  firebaseObjectToArray,
+} from "./../../../app/firestore/firebaseService";
+import { listenToEventChat } from "../eventActions";
+import { Link } from "react-router-dom";
+import { formatDistance } from "date-fns";
+import { CLEAR_COMMENTS } from "../eventConstants";
 
-export default function EventDetailedChat () {
-    return (
-        <>
-<Segment
-    textAlign="center"
-    attached="top"
-    inverted
-    color="teal"
-    style={{border: 'none'}}
->
-    <Header>Chat about this event</Header>
-</Segment>
+export default function EventDetailedChat({ eventId }) {
+  const dispatch = useDispatch();
+  const { comments } = useSelector((state) => state.eventsState);
+  const [showReplyForm, setShowReplyForm] = useState({
+    open: false,
+    commentId: null,
+  });
 
-<Segment attached>
-    <Comment.Group>
-        <Comment>
-            <Comment.Avatar src="/assets/user.png"/>
-            <Comment.Content>
-                <Comment.Author as="a">Matt</Comment.Author>
+  function handleCloseReplyForm() {
+    setShowReplyForm({ open: false, commentId: null });
+  }
+
+  useEffect(() => {
+    // 'on' listens to data changes at a particular location
+    getEventChatRef(eventId).on("value", (snapshot) => {
+      if (!snapshot.exists()) return;
+      // 'val()' returns data from firestore
+      //   console.log(snapshot.val());
+      dispatch(
+        listenToEventChat(
+          firebaseObjectToArray(snapshot.val())
+            // order
+            .reverse()
+        )
+      );
+      // Component is Umnounted
+      return () => {
+        dispatch({ type: CLEAR_COMMENTS });
+        // turn off Listener in Firebase with 'off'
+        getEventChatRef().off();
+      };
+    });
+  }, [eventId, dispatch]);
+
+  return (
+    <>
+      <Segment
+        textAlign="center"
+        attached="top"
+        inverted
+        color="teal"
+        style={{ border: "none" }}
+      >
+        <Header>Chat about this event</Header>
+      </Segment>
+
+      <Segment attached>
+        <EventDetailedChatForm eventId={eventId} parentId={0} />
+        <Comment.Group>
+          {comments.map((comment) => (
+            <Comment key={comment.id}>
+              <Comment.Avatar src={comment.photoURL || "/assets/user.png"} />
+              <Comment.Content>
+                <Comment.Author as={Link} to={`/profile/${comment.uid}`}>
+                  {comment.displayName}
+                </Comment.Author>
                 <Comment.Metadata>
-                    <div>Today at 5:42PM</div>
-                </Comment.Metadata>
-                <Comment.Text>How artistic!</Comment.Text>
-                <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                </Comment.Actions>
-            </Comment.Content>
-        </Comment>
-
-        <Comment>
-            <Comment.Avatar src="/assets/user.png"/>
-            <Comment.Content>
-                <Comment.Author as="a">Elliot Fu</Comment.Author>
-                <Comment.Metadata>
-                    <div>Yesterday at 12:30AM</div>
+                  <div>{formatDistance(comment.date, new Date())} </div>
                 </Comment.Metadata>
                 <Comment.Text>
-                    <p>
-                        This has been very useful for my research. Thanks as well!
-                    </p>
+                  {comment.text
+                    // in firebase is stored: 'go\noiko\n'
+                    .split("\n")
+                    .map((text, i) => (
+                      <span key={i}>
+                        {text}
+                        <br />
+                      </span>
+                    ))}
                 </Comment.Text>
                 <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
+                  <Comment.Action
+                    onClick={() =>
+                      setShowReplyForm({ open: true, commentId: comment.id })
+                    }
+                  >
+                    Reply
+                  </Comment.Action>
+                  {showReplyForm.open &&
+                    showReplyForm.commentId === comment.id && (
+                      <EventDetailedChatForm
+                        eventId={eventId}
+                        parentId={comment.id}
+                        closeForm={handleCloseReplyForm}
+                      />
+                    )}
                 </Comment.Actions>
-            </Comment.Content>
-            <Comment.Group>
-                <Comment>
-                    <Comment.Avatar src="/assets/user.png"/>
-                    <Comment.Content>
-                        <Comment.Author as="a">Jenny Hess</Comment.Author>
-                        <Comment.Metadata>
-                            <div>Just now</div>
-                        </Comment.Metadata>
-                        <Comment.Text>Elliot you are always so right :)</Comment.Text>
-                        <Comment.Actions>
-                            <Comment.Action>Reply</Comment.Action>
-                        </Comment.Actions>
-                    </Comment.Content>
-                </Comment>
-            </Comment.Group>
-        </Comment>
-
-        <Comment>
-            <Comment.Avatar src="/assets/user.png"/>
-            <Comment.Content>
-                <Comment.Author as="a">Joe Henderson</Comment.Author>
-                <Comment.Metadata>
-                    <div>5 days ago</div>
-                </Comment.Metadata>
-                <Comment.Text>Dude, this is awesome. Thanks so much</Comment.Text>
-                <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                </Comment.Actions>
-            </Comment.Content>
-        </Comment>
-
-        <Form reply>
-            <Form.TextArea/>
-            <Button
-                content="Add Reply"
-                labelPosition="left"
-                icon="edit"
-                primary
-            />
-        </Form>
-    </Comment.Group>
-</Segment>
-</>
-    )
+              </Comment.Content>
+            </Comment>
+          ))}
+        </Comment.Group>
+      </Segment>
+    </>
+  );
 }

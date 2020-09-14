@@ -11,12 +11,12 @@ import {
 export default function HomePage({ history }) {
   return (
     <Segment inverted textAlign="center" vertical className="masthead">
-      <Container>
+      <Container className="home-page-div">
         <Header as="h1" inverted>
           <Image
             size="massive"
             src="./assets/logo.png"
-            style={{ marginBootm: 12 }}
+            style={{ marginBottom: 12 }}
           />
           ReVents
         </Header>

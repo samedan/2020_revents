@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Container, Button } from "semantic-ui-react";
+import { Menu, Container, Button, Icon } from "semantic-ui-react";
 import { NavLink } from "react-router-dom";
 import SignedOutMenu from "./SignedOutMenu";
 import SignedInMenu from "./SignedInMenu";
@@ -13,18 +13,40 @@ export default function NavBar({ setFormOpen }) {
     <Menu inverted fixed="top">
       <Container>
         <Menu.Item as={NavLink} exact to="/" header>
-          <img
+          {/* <img
             src="/assets/logo.png"
             alt="logo"
             style={{ marginRight: "15px" }}
-          />
-          re-Vents
+          /> */}
+          <Icon link name="home" size="large" className="nav-bar-icon" />
+          {/* re-Vents */}
         </Menu.Item>
-        <Menu.Item name="Events" as={NavLink} to="/events" />
-        <Menu.Item name="Sandbox" as={NavLink} to="/sandbox" />
+
+        <Menu.Item name="Events" as={NavLink} to="/events">
+          <Icon
+            name="calendar alternate outline"
+            size="large"
+            className="nav-bar-icon"
+          />
+        </Menu.Item>
+        {/* <Menu.Item name="Sandbox" as={NavLink} to="/sandbox" /> */}
         {authenticated ? (
           <Menu.Item as={NavLink} to="/createevent">
-            <Button positive inverted content="Create event" />
+            {/* <Button positive inverted content="Create event" /> */}
+            {/* <Icon
+              circular
+              inverted
+              color="yellow"
+              positive
+              // style={{ color: "#21ba45" }}
+              name="plus"
+            /> */}
+
+            <Button icon positive inverted>
+              {/* <Icon name="plus" /> */}
+              Add <br />
+              event
+            </Button>
           </Menu.Item>
         ) : null}
         {authenticated ? <SignedInMenu /> : <SignedOutMenu />}
