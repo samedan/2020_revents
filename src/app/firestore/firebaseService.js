@@ -12,18 +12,15 @@ export function firebaseObjectToArray (snapshot) {
     }
 }
 
-
+// LOGIN & REGISTER
 // SIGN IN with Email
 export function signInWithEmail(creds) {
     return firebase.auth().signInWithEmailAndPassword(creds.email, creds.password);
 }
-
 // SIGN OUT
 export function signOutFirebase() {
     return firebase.auth().signOut();
 }
-
-
 // REGISTER with Email
 export async function registerInFirebase(creds) {
     try {
@@ -38,7 +35,6 @@ export async function registerInFirebase(creds) {
         throw(error);
     }
 }
-
 // FACEBOOK
 export async function socialLogin(selectedProvider) {
     let provider;
@@ -61,7 +57,6 @@ export async function socialLogin(selectedProvider) {
         toast.error(error.message)
     }
 }
-
 // CHANGE PASSWORD
 export function updateUserPassword(creds) {
     const user = firebase.auth().currentUser;
@@ -70,13 +65,13 @@ export function updateUserPassword(creds) {
 }
 
 
+// PHOTOS
 // UPLOAD IMAGE TO Firebase
 export function uploadToFirebasestorage(file, filename) {
     const user = firebase.auth().currentUser;
     const storageRef = firebase.storage().ref();
     return storageRef.child(`${user.uid}/user_images/${filename}`).put(file);
 }
-
 // DELETE PHOTO from Storage
 export function deleteFromFirebaseStorage(filename) {
     const userUid = firebase.auth().currentUser.uid;
@@ -87,6 +82,8 @@ export function deleteFromFirebaseStorage(filename) {
     return photoRef.delete();
 }
 
+
+// COMMENTS
 // POST Comment on Chat // REAL TIME DATABASE
 export function addEventChatComment(eventId, values) {
     const user = firebase.auth().currentUser;
@@ -102,7 +99,6 @@ export function addEventChatComment(eventId, values) {
     }
     return firebase.database().ref(`chat/${eventId}`).push(newComment)
 }
-
 // GET Comments
 export function getEventChatRef(eventId) {
     return firebase.database().ref(`chat/${eventId}`).orderByKey()

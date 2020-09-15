@@ -11,6 +11,7 @@ import { listenToEventChat } from "../eventActions";
 import { Link } from "react-router-dom";
 import { formatDistance } from "date-fns";
 import { CLEAR_COMMENTS } from "../eventConstants";
+import { createDataTree } from "./../../../app/common/util/util";
 
 export default function EventDetailedChat({ eventId }) {
   const dispatch = useDispatch();
@@ -59,9 +60,14 @@ export default function EventDetailedChat({ eventId }) {
       </Segment>
 
       <Segment attached>
-        <EventDetailedChatForm eventId={eventId} parentId={0} />
+        <EventDetailedChatForm
+          eventId={eventId}
+          // the original comment
+          parentId={0}
+          closeForm={setShowReplyForm}
+        />
         <Comment.Group>
-          {comments.map((comment) => (
+          {createDataTree(comments).map((comment) => (
             <Comment key={comment.id}>
               <Comment.Avatar src={comment.photoURL || "/assets/user.png"} />
               <Comment.Content>
@@ -100,6 +106,58 @@ export default function EventDetailedChat({ eventId }) {
                     )}
                 </Comment.Actions>
               </Comment.Content>
+
+              {/* REPLIES */}
+              {comment.childNodes.length > 0 && (
+                <Comment.Group>
+                  {comment.childNodes.reverse().map((child) => (
+                    <Comment key={child.id}>
+                      <Comment.Avatar
+                        src={child.photoURL || "/assets/user.png"}
+                      />
+                      <Comment.Content>
+                        <Comment.Author as={Link} to={`/profile/${child.uid}`}>
+                          {child.displayName}
+                        </Comment.Author>
+                        <Comment.Metadata>
+                          <div>{formatDistance(child.date, new Date())} </div>
+                        </Comment.Metadata>
+                        <Comment.Text>
+                          {child.text
+                            // in firebase is stored: 'go\noiko\n'
+                            .split("\n")
+                            .map((text, i) => (
+                              <span key={i}>
+                                {text}
+                                <br />
+                              </span>
+                            ))}
+                        </Comment.Text>
+                        <Comment.Actions>
+                          <Comment.Action
+                            onClick={() =>
+                              setShowReplyForm({
+                                open: true,
+                                commentId: child.id,
+                              })
+                            }
+                          >
+                            Reply
+                          </Comment.Action>
+                          {showReplyForm.open &&
+                            showReplyForm.commentId === child.id && (
+                              <EventDetailedChatForm
+                                eventId={eventId}
+                                parentId={child.parentId}
+                                closeForm={handleCloseReplyForm}
+                              />
+                            )}
+                        </Comment.Actions>
+                      </Comment.Content>
+                    </Comment>
+                  ))}
+                </Comment.Group>
+              )}
             </Comment>
           ))}
         </Comment.Group>

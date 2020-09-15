@@ -28,7 +28,7 @@ export function dataFromSnapshot(snapshot) {
 export function listenToEventsFromFirestore(predicate) {
   const user = firebase.auth().currentUser;
   console.log(user);
-  const today = new Date();
+  // const today = new Date();
   let eventsRef = db.collection("events").orderBy("date");
   // run Firebase query
   switch (predicate.get("filter")) {

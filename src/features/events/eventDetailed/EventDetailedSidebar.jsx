@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Item, Label, Grid } from "semantic-ui-react";
+import { Segment, Item, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 export default function EventDetailedSidebar({ attendees, hostUid }) {

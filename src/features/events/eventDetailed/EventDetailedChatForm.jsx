@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Form, Field, yupToFormErrors } from "formik";
+import { Formik, Form, Field } from "formik";
 import { toast } from "react-toastify";
 import { addEventChatComment } from "../../../app/firestore/firebaseService";
 import { Loader } from "semantic-ui-react";
@@ -38,7 +38,7 @@ export default function EventDetailedChatForm({
                 <textarea
                   rows="2"
                   {...field}
-                  placeholder="Press ENTER tu submit, SHIFT+ENTER for new line"
+                  placeholder="Press ENTER to submit, SHIFT+ENTER for new line"
                   onKeyPress={(e) => {
                     if (e.key === "Enter" && e.shiftKey) {
                       return;
