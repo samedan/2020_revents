@@ -245,3 +245,67 @@ export async function cancelUserAttendance(event) {
     throw error;
   }
 }
+
+// FOLLOWING
+// Post 'userFollowing' in the profile
+export async function followUser(profile) { // the profile of the unsigned user
+  const user = firebase.auth().currentUser;
+  try {
+    // following
+    await db.collection('following')
+      .doc(user.uid).collection('userFollowing')
+      .doc(profile.id).set({
+        displayName: profile.displayName,
+        photoURL: profile.photoURL,
+        uid: profile.id
+      });
+      // followers
+      await db.collection('following').doc(profile.id)
+      .collection('userFollowers')
+      .doc(user.uid).set({
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        uid: user.uid
+      });
+      // Count followers
+      await db.collection('users').doc(user.uid).update({
+        followingCount: firebase.firestore.FieldValue.increment(1)
+      })
+      return await db.collection('users').doc(profile.id).update({
+        followerCount: firebase.firestore.FieldValue.increment(1)
+      })
+  } catch (error) {
+    throw error;
+  }
+}
+// UNFOLLOW
+export async function unfollowUser(profile) { // the profile of the unsigned user
+  const user = firebase.auth().currentUser;
+  try {
+    await db.collection('following').doc(user.uid).collection('userFollowing').doc(profile.id).delete();
+    await db.collection('following').doc(profile.id).collection('userFollowers').doc(user.uid).delete();
+    // Re-Count followers
+    await db.collection('users').doc(user.uid).update({
+      followingCount: firebase.firestore.FieldValue.increment(-1)
+    })
+    return await db.collection('users').doc(profile.id).update({
+      followerCount: firebase.firestore.FieldValue.increment(-1)
+    })
+  } catch (error) {
+    throw error;
+  }
+}
+// GET Followers
+export function getFollowersCollection(profileId) {
+  return db.collection('following').doc(profileId).collection('userFollowers')
+}
+// GET Followings
+export function getFollowingCollection(profileId) {
+  return db.collection('following').doc(profileId).collection('userFollowing')
+}
+
+export function getFollowingDoc(profileId) {
+  const userUid = firebase.auth().currentUser.uid;
+  return db.collection('following').doc(userUid).collection('userFollowing')
+  .doc(profileId).get();
+}
