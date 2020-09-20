@@ -9,12 +9,15 @@ import { listenToEvents } from "./../eventActions";
 import { listenToEventsFromFirestore } from "./../../../app/firestore/firestoreService";
 import useFirestoreCollection from "./../../../app/hooks/useFirestoreCollection";
 import { useState } from "react";
+import EventsFeed from "./EventsFeed";
 
 export default function EventDashboard() {
   const dispatch = useDispatch();
   // from store
   const { events } = useSelector((state) => state.eventsState);
   const { loading } = useSelector((state) => state.async);
+  const { authenticated } = useSelector((state) => state.auth);
+
   const [predicate, setPredicate] = useState(
     new Map([
       ["startDate", new Date()],
@@ -42,6 +45,7 @@ export default function EventDashboard() {
       reversed="computer"
     >
       <Grid.Column width="6">
+        {authenticated && <EventsFeed />}
         <EventFilters
           predicate={predicate}
           loading={loading}
