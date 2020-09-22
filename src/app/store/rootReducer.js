@@ -4,17 +4,21 @@ import eventReducer from "./../../features/events/eventReducer";
 import modalReducer from "../common/modals/modalReducer";
 import authReducer from "../../features/auth/authReducer";
 import asyncReducer from "../async/asyncReducer";
+import { connectRouter } from "connected-react-router";
 
 // import modalReducer from "./../../common/modals/modalReducer";
-import profileReducer from './../../features/profiles/profileReducer';
+import profileReducer from "./../../features/profiles/profileReducer";
 
-const rootReducer = combineReducers({
-  test: testReducer,
-  eventsState: eventReducer,
-  modals: modalReducer,
-  auth: authReducer,
-  async: asyncReducer,
-  profile: profileReducer
-});
+const rootReducer = (history) =>
+  combineReducers({
+    // passing history to redux store
+    router: connectRouter(history),
+    test: testReducer,
+    eventsState: eventReducer,
+    modals: modalReducer,
+    auth: authReducer,
+    async: asyncReducer,
+    profile: profileReducer,
+  });
 
 export default rootReducer;

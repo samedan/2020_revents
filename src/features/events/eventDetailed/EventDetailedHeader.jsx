@@ -7,9 +7,13 @@ import {
   addUserAttendance,
   cancelUserAttendance,
 } from "../../../app/firestore/firestoreService";
+import { useSelector } from "react-redux";
+import UnauthModal from "../../auth/UnauthModal";
 
 export default function EventDetailedHeader({ event, isHost, isGoing }) {
   const [loading, setLoading] = useState(false);
+  const { authenticated } = useSelector((state) => state.auth);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // JOIN Event
   async function handleUserJoinEvent() {
@@ -37,6 +41,7 @@ export default function EventDetailedHeader({ event, isHost, isGoing }) {
 
   return (
     <>
+      {modalOpen && <UnauthModal setModalOpen={setModalOpen} />}
       <Segment.Group>
         <Segment basic attached="top" style={{ padding: "0" }}>
           <Image src={`/assets/categoryImages/${event.category}.jpg`} fluid />
@@ -77,7 +82,11 @@ export default function EventDetailedHeader({ event, isHost, isGoing }) {
                 <Button
                   loading={loading}
                   color="teal"
-                  onClick={handleUserJoinEvent}
+                  onClick={
+                    authenticated
+                      ? handleUserJoinEvent
+                      : () => setModalOpen(true)
+                  }
                 >
                   JOIN THIS EVENT
                 </Button>
