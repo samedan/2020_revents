@@ -7,7 +7,7 @@ import EventDetailedSidebar from "./EventDetailedSidebar";
 import { useSelector, useDispatch } from "react-redux";
 import useFirestoreDoc from "./../../../app/hooks/useFirestoreDoc";
 import { listenToEventFromFirestore } from "../../../app/firestore/firestoreService";
-import { listenToEvents } from "./../eventActions";
+import { listenToSelectedEvent } from "./../eventActions";
 import LoadingComponent from "./../../../app/layout/LoadingComponent";
 import { Redirect } from "react-router-dom";
 
@@ -15,8 +15,10 @@ export default function EventDetailedPage({ match }) {
   const dispatch = useDispatch();
 
   const { currentUser } = useSelector((state) => state.auth);
-  const event = useSelector((state) =>
-    state.eventsState.events.find((e) => e.id === match.params.id)
+  const event = useSelector(
+    (state) =>
+      // state.eventsState.events.find((e) => e.id === match.params.id)
+      state.eventsState.selectedEvent
   );
   const { loading, error } = useSelector((state) => state.async);
   // is HOST true or false
@@ -27,7 +29,7 @@ export default function EventDetailedPage({ match }) {
   // GET event from firestore
   useFirestoreDoc({
     query: () => listenToEventFromFirestore(match.params.id),
-    data: (event) => dispatch(listenToEvents([event])),
+    data: (event) => dispatch(listenToSelectedEvent(event)),
     deps: [match.params.id, dispatch],
   });
 

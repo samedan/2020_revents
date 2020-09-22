@@ -13,9 +13,10 @@ import { categoryData } from "../../../app/api/categoryOptions";
 import MyPlaceInput from "../../../app/common/form/MyPlaceInput";
 import { listenToEventFromFirestore } from "../../../app/firestore/firestoreService";
 import useFirestoreDoc from "./../../../app/hooks/useFirestoreDoc";
-import { listenToEvents } from "./../eventActions";
+
 import LoadingComponent from "./../../../app/layout/LoadingComponent";
 import { toast } from "react-toastify";
+import { listenToSelectedEvent } from "./../eventActions";
 import {
   cancelEventToggle,
   updateEventInFirestore,
@@ -29,9 +30,7 @@ export default function EventForm({ match, history }) {
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const selectedEvent = useSelector((state) =>
-    state.eventsState.events.find((e) => e.id === match.params.id)
-  );
+  const { selectedEvent } = useSelector((state) => state.eventsState);
 
   const { loading, error } = useSelector((state) => state.async);
 
@@ -81,7 +80,7 @@ export default function EventForm({ match, history }) {
   useFirestoreDoc({
     shouldExecute: !!match.params.id, // if no 'id', then false
     query: () => listenToEventFromFirestore(match.params.id),
-    data: (event) => dispatch(listenToEvents([event])),
+    data: (event) => dispatch(listenToSelectedEvent(event)),
     deps: [match.params.id, dispatch],
   });
 
