@@ -27,8 +27,8 @@ export default function UnauthModal({ history, setModalOpen }) {
     setOpen(false);
   }
 
-  function handleOpenLoginModal({ modalType }) {
-    dispatch(openModal(modalType));
+  function handleOpenLoginModal(modalType) {
+    dispatch(openModal({ modalType }));
     setOpen(false);
     setModalOpen(false);
   }
