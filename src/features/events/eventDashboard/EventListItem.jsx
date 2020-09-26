@@ -13,8 +13,14 @@ import { Link } from "react-router-dom";
 
 import { format } from "date-fns";
 import { deleteEventInFirestore } from "../../../app/firestore/firestoreService";
+import { useSelector } from "react-redux";
 
 export default function EventListItem({ event }) {
+  // console.log(event.hostUid);
+
+  const { currentUser, authenticated } = useSelector((state) => state.auth);
+  // console.log(currentUser.uid);
+
   return (
     <Segment.Group>
       <Segment>
@@ -85,12 +91,14 @@ export default function EventListItem({ event }) {
           floated="right"
           content="View"
         />
-        <Button
-          onClick={() => deleteEventInFirestore(event.id)}
-          color="red"
-          floated="right"
-          content="Delete"
-        />
+        {authenticated && currentUser && event.hostUid === currentUser.uid && (
+          <Button
+            onClick={() => deleteEventInFirestore(event.id)}
+            color="red"
+            floated="right"
+            content="Delete"
+          />
+        )}
       </Segment>
     </Segment.Group>
   );

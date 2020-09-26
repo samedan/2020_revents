@@ -1,40 +1,46 @@
 import React from "react";
 import { Menu, Header } from "semantic-ui-react";
 import Calendar from "react-calendar";
+import { useSelector } from "react-redux";
 
 export default function EventFilters({ setPredicate, predicate, loading }) {
   // console.log(setPredicate);
 
+  const { authenticated } = useSelector((state) => state.auth);
+
   return (
     <>
-      <Menu vertical size="large" style={{ width: "100%" }}>
-        <Header icon="filter" attached color="teal" content="Filters" />
-        <Menu.Item
-          disabled={loading}
-          content="All events"
-          active={predicate.get("filter") === "all"}
-          onClick={() => setPredicate("filter", "all")}
-        />
-        <Menu.Item
-          disabled={loading}
-          content="I'm going"
-          active={predicate.get("filter") === "isGoing"}
-          onClick={() => setPredicate("filter", "isGoing")}
-        />
-        <Menu.Item
-          disabled={loading}
-          content="I'm hosting"
-          active={predicate.get("filter") === "isHost"}
-          onClick={() => setPredicate("filter", "isHost")}
-        />
+      {authenticated && (
+        <Menu vertical size="large" style={{ width: "100%" }}>
+          <Header icon="filter" attached color="teal" content="Filters" />
+          <Menu.Item
+            disabled={loading}
+            content="All events"
+            active={predicate.get("filter") === "all"}
+            onClick={() => setPredicate("filter", "all")}
+          />
+          <Menu.Item
+            disabled={loading}
+            content="I'm going"
+            active={predicate.get("filter") === "isGoing"}
+            onClick={() => setPredicate("filter", "isGoing")}
+          />
+          <Menu.Item
+            disabled={loading}
+            content="I'm hosting"
+            active={predicate.get("filter") === "isHost"}
+            onClick={() => setPredicate("filter", "isHost")}
+          />
 
-        <Menu.Item
-          disabled={loading}
-          content="Past Events"
-          active={predicate.get("filter") === "pastEvents"}
-          onClick={() => setPredicate("filter", "pastEvents")}
-        />
-      </Menu>
+          <Menu.Item
+            disabled={loading}
+            content="Past Events"
+            active={predicate.get("filter") === "pastEvents"}
+            onClick={() => setPredicate("filter", "pastEvents")}
+          />
+        </Menu>
+      )}
+
       <Header icon="calendar" attached color="teal" content="Select date" />
       <Calendar
         onChange={(date) => setPredicate("startDate", date)}
