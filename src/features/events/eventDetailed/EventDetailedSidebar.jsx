@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Item, Label } from "semantic-ui-react";
+import { Segment, Item, Label, Grid } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 export default function EventDetailedSidebar({ attendees, hostUid }) {
@@ -16,40 +16,51 @@ export default function EventDetailedSidebar({ attendees, hostUid }) {
         {attendees.length} {attendees.length > 1 ? "People" : "Person"} Going
       </Segment>
       <Segment attached>
-        <Item.Group
+        {/* <Item.Group
           //  relaxed
+          // divided
           divided
+          relaxed
+          stackable
           className="event-detailed-sidebar-sidebar"
-        >
+        > */}
+        <Grid columns={2} doubling stackable>
           {attendees.map((attendee) => (
-            <Item
-              as={Link}
-              to={`/profile/${attendee.id}`}
-              key={attendee.id}
-              style={{ position: "relative" }}
-              className="event-detailed-sidebar-image"
-            >
-              {hostUid === attendee.id && (
-                <Label
-                  style={{ position: "absolute", zIndex: 1000 }}
-                  color="orange"
-                  ribbon="right"
-                  content="Host"
+            <Grid.Column>
+              {/* <Segment> */}
+              <Item
+                as={Link}
+                to={`/profile/${attendee.id}`}
+                key={attendee.id}
+                style={{ position: "relative" }}
+                className="event-detailed-sidebar-image"
+              >
+                {hostUid === attendee.id && (
+                  <Label
+                    style={{ position: "absolute", zIndex: 1000 }}
+                    color="orange"
+                    ribbon="right"
+                    content="Host"
+                  />
+                )}
+                <Item.Image
+                  mobile={3}
+                  // size="tiny"
+                  size="mini"
+                  src={attendee.photoURL || "/assets/user.png"}
+                  title={attendee.displayName}
                 />
-              )}
-              <Item.Image
-                size="tiny"
-                src={attendee.photoURL || "/assets/user.png"}
-                title={attendee.displayName}
-              />
-              <Item.Content verticalAlign="middle">
-                <Item.Header as="h3">
-                  <span>{attendee.displayName}</span>
-                </Item.Header>
-              </Item.Content>
-            </Item>
+                <Item.Content verticalAlign="middle">
+                  <Item.Header as="h3">
+                    <span>{attendee.displayName}</span>
+                  </Item.Header>
+                </Item.Content>
+              </Item>
+              {/* </Segment> */}
+            </Grid.Column>
           ))}
-        </Item.Group>
+        </Grid>
+        {/* </Item.Group> */}
       </Segment>
     </>
   );
