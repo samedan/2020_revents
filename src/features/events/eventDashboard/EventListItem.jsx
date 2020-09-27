@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Segment,
   Item,
@@ -7,19 +7,52 @@ import {
   Button,
   Label,
   Grid,
+  Confirm,
 } from "semantic-ui-react";
 import EventListAttendee from "./EventListAttendee";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { format } from "date-fns";
 import { deleteEventInFirestore } from "../../../app/firestore/firestoreService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { clearEvents, deleteEvent, fetchEvents } from "../eventActions";
 
 export default function EventListItem({ event }) {
   // console.log(event.hostUid);
-
+  const [loadingCancel, setLoadingCancel] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { currentUser, authenticated } = useSelector((state) => state.auth);
-  // console.log(currentUser.uid);
+  const { retainState } = useSelector((state) => state.eventsState);
+  // redirect to '/'
+  const history = useHistory();
+  // const {
+  //   events,
+  //   moreEvents,
+  //   filter,
+  //   startDate,
+  //   lastVisible,
+  //   retainState,
+  // } = useSelector((state) => state.eventsState);
+
+  const dispatch = useDispatch();
+
+  // Delete the event
+  function handleDeleteToggle(event) {
+    setConfirmOpen(false);
+    setLoadingCancel(true);
+    try {
+      console.log(event.id);
+      dispatch(deleteEvent(event.id));
+      // history.push("/events");
+
+      toast.success("Event deleted");
+      setLoadingCancel(false);
+    } catch (error) {
+      setLoadingCancel(true);
+      toast.error(error.message);
+    }
+  }
 
   return (
     <Segment.Group>
@@ -93,12 +126,24 @@ export default function EventListItem({ event }) {
         />
         {authenticated && currentUser && event.hostUid === currentUser.uid && (
           <Button
-            onClick={() => deleteEventInFirestore(event.id)}
+            // onClick={() => deleteEventInFirestore(event.id)}
             color="red"
             floated="right"
             content="Delete"
+            loading={loadingCancel}
+            onClick={() => setConfirmOpen(true)}
           />
         )}
+        <Confirm
+          content={
+            "selectedEvent?.isCancelled"
+              ? "This will delete the event. Are you sure?"
+              : "This will cancel the event. Are you sure?"
+          }
+          open={confirmOpen}
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={() => handleDeleteToggle(event)}
+        />
       </Segment>
     </Segment.Group>
   );

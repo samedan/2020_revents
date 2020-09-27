@@ -20,6 +20,7 @@ export default function EventDetailedHeader({ event, isHost, isGoing }) {
     setLoading(true);
     try {
       await addUserAttendance(event);
+      toast.success("You joined the event");
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -32,6 +33,7 @@ export default function EventDetailedHeader({ event, isHost, isGoing }) {
     setLoading(true);
     try {
       await cancelUserAttendance(event);
+      toast.info("You left the event");
     } catch (error) {
       toast.error(error.message);
     } finally {

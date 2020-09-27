@@ -6,50 +6,40 @@ import EventListItemPlaceholder from "./EventListItemPlaceholder";
 import EventFilters from "./EventFilters";
 import { clearEvents, fetchEvents } from "./../eventActions";
 import EventsFeed from "./EventsFeed";
+import { RETAIN_STATE } from "../eventConstants";
 
 export default function EventDashboard() {
   // pagination
   const limit = 2;
   const dispatch = useDispatch();
   // from store
-  const { events, moreEvents } = useSelector((state) => state.eventsState);
+  const {
+    events,
+    moreEvents,
+    filter,
+    startDate,
+    lastVisible,
+    retainState,
+  } = useSelector((state) => state.eventsState);
   const { loading } = useSelector((state) => state.async);
   const [loadingInitial, setLoadingInitial] = useState(false);
   const { authenticated } = useSelector((state) => state.auth);
-  const [lastDocSnapshot, setLastDocSnapshot] = useState(null);
-
-  const [predicate, setPredicate] = useState(
-    new Map([
-      ["startDate", new Date()],
-      ["filter", "all"],
-    ])
-  );
-
-  function handleSetPredicate(key, value) {
-    dispatch(clearEvents());
-    setLastDocSnapshot(null);
-    // 'new' is for rerender
-    setPredicate(new Map(predicate.set(key, value)));
-  }
 
   useEffect(() => {
+    if (retainState) return;
     setLoadingInitial(true);
-    dispatch(fetchEvents(predicate, limit)).then((lastVisible) => {
-      setLastDocSnapshot(lastVisible);
+    dispatch(fetchEvents(filter, startDate, limit)).then((lastVisible) => {
       setLoadingInitial(false);
     });
     // unmount, reset events
     return () => {
       dispatch(clearEvents());
+      // dispatch({ type: RETAIN_STATE });
     };
-  }, [dispatch, predicate]);
+  }, [dispatch, filter, startDate, retainState]);
 
   function handleFetchNextEvents() {
-    dispatch(fetchEvents(predicate, limit, lastDocSnapshot)).then(
-      (lastVisible) => {
-        setLastDocSnapshot(lastVisible);
-      }
-    );
+    dispatch(fetchEvents(filter, startDate, limit, lastVisible));
   }
 
   // Custom HOOK
@@ -68,11 +58,7 @@ export default function EventDashboard() {
     >
       <Grid.Column width="6">
         {authenticated && <EventsFeed />}
-        <EventFilters
-          predicate={predicate}
-          loading={loading}
-          setPredicate={handleSetPredicate}
-        />
+        <EventFilters loading={loading} />
       </Grid.Column>
       <Grid.Column width="10">
         {loadingInitial && (

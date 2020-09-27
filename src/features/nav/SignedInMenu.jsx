@@ -40,7 +40,7 @@ export default function SignedInMenu() {
           <Dropdown.Menu>
             <Dropdown.Item
               as={Link}
-              to="/createEvent"
+              to="/createevent"
               text="Create Event"
               icon="plus"
             />

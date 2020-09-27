@@ -4,7 +4,6 @@ import { Feed } from "semantic-ui-react";
 import { formatDistance } from "date-fns";
 
 export default function EventFeedItem({ post }) {
-  console.log(post);
   let summary;
   switch (post.code) {
     case "joined-event":

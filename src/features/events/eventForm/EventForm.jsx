@@ -16,14 +16,15 @@ import useFirestoreDoc from "./../../../app/hooks/useFirestoreDoc";
 
 import LoadingComponent from "./../../../app/layout/LoadingComponent";
 import { toast } from "react-toastify";
-import { listenToSelectedEvent } from "./../eventActions";
+import { clearSelectedEvent, listenToSelectedEvent } from "./../eventActions";
 import {
   cancelEventToggle,
   updateEventInFirestore,
   addEventToFirestore,
 } from "./../../../app/firestore/firestoreService";
+import { useEffect } from "react";
 
-export default function EventForm({ match, history }) {
+export default function EventForm({ match, history, location }) {
   const dispatch = useDispatch();
 
   // LOcal state
@@ -34,17 +35,22 @@ export default function EventForm({ match, history }) {
 
   const { loading, error } = useSelector((state) => state.async);
 
+  useEffect(() => {
+    if (location.pathname !== "/createevent") return;
+    dispatch(clearSelectedEvent());
+  }, [dispatch, location.pathname]);
+
   const initialValues = selectedEvent ?? {
     title: "",
     category: "",
     description: "",
     city: {
-      address: "",
-      latLng: null,
+      address: "1- avenue pasteur",
+      latLng: "null",
     },
     venue: {
-      address: "",
-      latLng: null,
+      address: "16oiuoi op",
+      latLng: " null",
     },
     date: "",
   };
@@ -69,6 +75,7 @@ export default function EventForm({ match, history }) {
     setLoadingCancel(true);
     try {
       await cancelEventToggle(event);
+
       setLoadingCancel(false);
     } catch (error) {
       setLoadingCancel(true);
@@ -78,7 +85,9 @@ export default function EventForm({ match, history }) {
 
   // read event from firestore
   useFirestoreDoc({
-    shouldExecute: !!match.params.id, // if no 'id', then false
+    shouldExecute:
+      match.params.id !== selectedEvent?.id &&
+      location.pathname !== "/createevent", // if no 'id', then false
     query: () => listenToEventFromFirestore(match.params.id),
     data: (event) => dispatch(listenToSelectedEvent(event)),
     deps: [match.params.id, dispatch],
@@ -92,6 +101,7 @@ export default function EventForm({ match, history }) {
   return (
     <Segment clearing>
       <Formik
+        enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
@@ -112,7 +122,11 @@ export default function EventForm({ match, history }) {
         {({ isSubmitting, dirty, isValid, values }) => (
           <Form className="ui form">
             <Header sub color="teal" content="Event details" />
-            <MyTextInput name="title" placeholder="Event Title" />
+            <MyTextInput
+              autoComplete="off"
+              name="title"
+              placeholder="Event Title"
+            />
             <MySelectInput
               options={categoryData}
               name="category"
@@ -120,7 +134,16 @@ export default function EventForm({ match, history }) {
             />
             <MyTextArea name="description" placeholder="Description" rows="3" />
             <Header sub color="teal" content="Event Location details" />
-            <MyPlaceInput name="city" placeholder="City" />
+            <MyPlaceInput
+              autoComplete="off"
+              name="city"
+              placeholder="Enter your city"
+            />
+            {/* <MyPlaceInput
+              autoComplete="off"
+              name="yourcity"
+              placeholder="Enter your city"
+            /> */}
             <MyPlaceInput
               disabled={!values.city.latLng}
               name="venue"
@@ -130,6 +153,7 @@ export default function EventForm({ match, history }) {
                 radius: 1000, // km
                 types: ["establishment"],
               }}
+              autoComplete="false"
             />
             <MyDateInput
               name="date"
@@ -139,6 +163,7 @@ export default function EventForm({ match, history }) {
               dateFormat="MMMM d, yyyy h:mm a"
               placeholderText="Event Date"
               type="date"
+              autoComplete="off"
             />
 
             <Button

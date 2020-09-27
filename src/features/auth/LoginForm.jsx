@@ -46,11 +46,16 @@ export default function LoginForm() {
       >
         {({ isSubmitting, isValid, dirty, errors }) => (
           <Form className="ui form">
-            <MyTextInput name="email" placeholder="Email Adress" />
+            <MyTextInput
+              autoComplete="off"
+              name="email"
+              placeholder="Email Adress"
+            />
             <MyTextInput
               name="password"
               placeholder="Password"
               type="password"
+              autoComplete="off"
             />
             {/* // Formik errors */}
             {errors.auth && (

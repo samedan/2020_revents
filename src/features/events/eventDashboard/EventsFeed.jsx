@@ -20,7 +20,6 @@ export default function EventsFeed() {
       }
       const feed = firebaseObjectToArray(snapshot.val()).reverse(); // get the most recent events first
       dispatch(listenToFeed(feed));
-      console.log(feed);
     });
     return () => {
       // unsubscribe

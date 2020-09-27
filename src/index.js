@@ -1,25 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import 'semantic-ui-css/semantic.min.css';
-import 'react-toastify/dist/ReactToastify.min.css';
-import 'react-calendar/dist/Calendar.css';
-import './app/layout/styles.css';
-import App from './app/layout/App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "semantic-ui-css/semantic.min.css";
+import "react-toastify/dist/ReactToastify.min.css";
+import "react-calendar/dist/Calendar.css";
+import "./app/layout/styles.css";
+import App from "./app/layout/App";
+import * as serviceWorker from "./serviceWorker";
 // import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { configureStore, history } from './app/store/configureStore';
-import ScrollToTop from './app/layout/ScrollToTop';
-import { ConnectedRouter } from 'connected-react-router';
+import { Provider } from "react-redux";
+import { configureStore, history } from "./app/store/configureStore";
+import ScrollToTop from "./app/layout/ScrollToTop";
+import { ConnectedRouter } from "connected-react-router";
 
+const store = configureStore();
 
-const store= configureStore();
-
-
-const rootEl = document.getElementById('root');
+const rootEl = document.getElementById("root");
 
 // function render() {
-//   ReactDOM.render(<App />, rootEl) 
+//   ReactDOM.render(<App />, rootEl)
 // }
 
 // // hot module replacement
@@ -30,13 +28,14 @@ const rootEl = document.getElementById('root');
 // }
 
 ReactDOM.render(
-    <Provider store={store}>
-        <ConnectedRouter history={history}>
-        <ScrollToTop />
-            <App />
-        </ConnectedRouter>
-    </Provider>
-    , rootEl)
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <ScrollToTop />
+      <App />
+    </ConnectedRouter>
+  </Provider>,
+  rootEl
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

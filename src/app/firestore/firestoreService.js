@@ -1,3 +1,9 @@
+import { DELETE_EVENT } from "../../features/events/eventConstants";
+import {
+  asyncActionError,
+  asyncActionFinish,
+  asyncActionStart,
+} from "../async/asyncReducer";
 import firebase from "../config/firebase";
 
 const db = firebase.firestore();
@@ -25,27 +31,36 @@ export function dataFromSnapshot(snapshot) {
 
 // GET ALL EVENTS with PREDICATE Filter
 // Predicate on Event Dashboard
-export function fetchEventsFromFirestore(predicate, limit, lastDocSnapshot = null) {
+export function fetchEventsFromFirestore(
+  filter,
+  startDate,
+  limit,
+  lastDocSnapshot = null
+) {
   const user = firebase.auth().currentUser;
   // console.log(user);
   // const today = new Date();
-  let eventsRef = db.collection("events").orderBy("date").startAfter(lastDocSnapshot).limit(limit);
+  let eventsRef = db
+    .collection("events")
+    .orderBy("date")
+    .startAfter(lastDocSnapshot)
+    .limit(limit);
   // run Firebase query
-  switch (predicate.get("filter")) {
+  switch (filter) {
     case "isGoing":
       return eventsRef
         .where("attendeesIds", "array-contains", user.uid)
-        .where("date", ">=", predicate.get("startDate"));
+        .where("date", ">=", startDate);
     case "isHost":
       return eventsRef
         .where("hostUid", "==", user.uid)
-        .where("date", ">=", predicate.get("startDate"));
+        .where("date", ">=", startDate);
     case "pastEvents":
       return eventsRef
         .where("attendeesIds", "array-contains", user.uid)
-        .where("date", "<=", predicate.get("startDate"));
+        .where("date", "<=", startDate);
     default:
-      return eventsRef.where("date", ">=", predicate.get("startDate"));
+      return eventsRef.where("date", ">=", startDate);
   }
 }
 
@@ -184,17 +199,17 @@ export async function setMainPhoto(photo) {
   const user = firebase.auth().currentUser;
   const today = new Date();
   const eventDocQuery = db
-    .collection('events')
-    .where('attendeesIds', 'array-contains', user.uid)
-    .where('date', '>=', today);
+    .collection("events")
+    .where("attendeesIds", "array-contains", user.uid)
+    .where("date", ">=", today);
   const userFollowingRef = db
-    .collection('following')
+    .collection("following")
     .doc(user.uid)
-    .collection('userFollowing');
+    .collection("userFollowing");
 
   const batch = db.batch();
 
-  batch.update(db.collection('users').doc(user.uid), {
+  batch.update(db.collection("users").doc(user.uid), {
     photoURL: photo.url,
   });
 
@@ -219,13 +234,13 @@ export async function setMainPhoto(photo) {
     const userFollowingSnap = await userFollowingRef.get();
     userFollowingSnap.docs.forEach((docRef) => {
       let followingDocRef = db
-        .collection('following')
+        .collection("following")
         .doc(docRef.id)
-        .collection('userFollowers')
+        .collection("userFollowers")
         .doc(user.uid);
       batch.update(followingDocRef, {
-        photoURL: photo.url
-      })
+        photoURL: photo.url,
+      });
     });
 
     await batch.commit();
@@ -236,7 +251,6 @@ export async function setMainPhoto(photo) {
   } catch (error) {
     console.log(error);
     throw error;
-    
   }
 }
 
